@@ -43,7 +43,7 @@ def get_gemini_insights(prompt):
         return "Please configure the Gemini API Key in Streamlit secrets (.streamlit/secrets.toml) to view AI insights."
     try:
         response = gemini_client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.6-flash',
             contents=prompt
         )
         return response.text
