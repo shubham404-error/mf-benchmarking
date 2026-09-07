@@ -1,0 +1,27 @@
+Scheme Code;ISIN Div Payout/ ISIN Growth;ISIN Div Reinvestment;Scheme Name;Plan;Option;Net Asset Value;Date
+ 
+Open Ended Schemes(Childrenâs Fund - Childrens' Fund)
+ 
+Axis Mutual Fund
+ 
+135762;INF846K01WO1;-;Axis Children's Fund;Direct Plan;Growth Option;30.3228;04-Sep-2026
+135765;INF846K01WP8;-;Axis Children's Fund;Direct Plan;IDCW Option;27.9328;04-Sep-2026
+135759;INF846K01WJ1;-;Axis Children's Fund;Regular Plan;Growth Option;26.4142;04-Sep-2026
+135760;INF846K01WK9;-;Axis Children's Fund;Regular Plan;IDCW Option;24.3692;04-Sep-2026
+135764;INF846K01WR4;-;Axis Children's Fund;Direct Plan;Growth Option;30.9027;04-Sep-2026
+135763;INF846K01WS2;INF846K01WQ6;Axis Children's Fund;Direct Plan;IDCW Option;27.9856;04-Sep-2026
+135766;INF846K01WM5;-;Axis Children's Fund;Regular Plan;Growth Option;26.4109;04-Sep-2026
+135761;INF846K01WN3;INF846K01WL7;Axis Children's Fund;Regular Plan;IDCW Option;24.3472;04-Sep-2026
+ 
+Open Ended Schemes(Debt Scheme - Banking and PSU Fund)
+ 
+Aditya Birla Sun Life Mutual Fund
+ 
+119551;INF209KA12Z1;INF209KA13Z9;Aditya Birla Sun Life Banking & PSU Debt Fund;Direct Plan;IDCW-Re-investment;107.1574;04-Sep-2026
+119552;INF209K01YM2;-;Aditya Birla Sun Life Banking & PSU Debt Fund;Direct Plan;MONTHLY DCW Payout;117.0546;04-Sep-2026
+119553;INF209K01YO8;-;Aditya Birla Sun Life Banking & PSU Debt Fund;Direct Plan;QUARTERLY IDCW Payout;105.1847;04-Sep-2026
+108272;INF209K01LX6;INF209KA11Z3;Aditya Birla Sun Life Banking & PSU Debt Fund;Regular Plan;IDCW-Re-investment;149.9192;04-Sep-2026
+110282;INF209K01LU2;-;Aditya Birla Sun Life Banking & PSU Debt Fund;Regular Plan;MONTHLY IDCW Payout;112.2932;04-Sep-2026
+108274;INF209K01LN7;-;Aditya Birla Sun Life Banking & PSU Debt Fund;Regular Plan;QUARTERLY IDCW Payout;102.7166;04-Sep-2026
+108273;INF209K01LV0;-;Aditya Birla Sun Life Banking & PSU Debt Fund;Regular Plan;GROWTH;388.3736;04-Sep-2026
+119550;INF209K01YN0;-;Aditya Birla Sun Life Banking & PSU Debt Fund;Direct Plan;GROWTH;404.6889;04-Se
