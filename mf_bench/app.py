@@ -29,17 +29,18 @@ h1, h2, h3, h4, h5, h6 {
 st.sidebar.title("Settings")
 rfr_input = st.sidebar.slider("Risk Free Rate (%)", 0.0, 15.0, DEFAULT_RISK_FREE_RATE * 100) / 100.0
 
-gemini_api_key = st.sidebar.text_input("Gemini API Key", type="password", value=os.environ.get("GEMINI_API_KEY", ""))
-
-if gemini_api_key:
-    os.environ["GEMINI_API_KEY"] = gemini_api_key
-    gemini_client = genai.Client()
-else:
+try:
+    gemini_api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+    if gemini_api_key:
+        gemini_client = genai.Client(api_key=gemini_api_key)
+    else:
+        gemini_client = None
+except Exception:
     gemini_client = None
 
 def get_gemini_insights(prompt):
     if not gemini_client:
-        return "Please provide a Gemini API Key in the sidebar to view AI insights."
+        return "Please configure the Gemini API Key in Streamlit secrets (.streamlit/secrets.toml) to view AI insights."
     try:
         response = gemini_client.models.generate_content(
             model='gemini-2.5-flash',
