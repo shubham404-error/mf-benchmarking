@@ -38,17 +38,33 @@ try:
 except Exception:
     gemini_client = None
 
-def get_gemini_insights(prompt):
+def get_gemini_insights(prompt, retries=3):
     if not gemini_client:
         return "Please configure the Gemini API Key in Streamlit secrets (.streamlit/secrets.toml) to view AI insights."
-    try:
-        response = gemini_client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=prompt
-        )
-        return response.text
-    except Exception as e:
-        return f"Error fetching insights: {str(e)}"
+    
+    delay = 2
+    for attempt in range(retries):
+        try:
+            response = gemini_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt
+            )
+            return response.text
+        except Exception as e:
+            error_str = str(e).lower()
+            if "503" in error_str or "unavailable" in error_str or "429" in error_str or "quota" in error_str:
+                if attempt == retries - 1:
+                    return "⚠️ **AI Insights Temporarily Unavailable**\n\nThe Gemini AI model is currently experiencing high demand. Please wait a few minutes and try again."
+                import time
+                time.sleep(delay)
+                delay *= 2
+            else:
+                if attempt == retries - 1:
+                    return f"⚠️ **Error Fetching Insights:**\n\n{str(e)}"
+                import time
+                time.sleep(delay)
+                delay *= 2
+    return "⚠️ **Error:** Max retries exceeded while connecting to the AI."
 
 # Shared helper
 def fund_picker(key_prefix):
@@ -385,3 +401,4 @@ elif page == "Client Holdings":
             df_fmt["Fund XIRR"] = df_fmt["Fund XIRR"].apply(lambda x: f"{x*100:.2f}%" if x else "N/A")
             df_fmt["Benchmark XIRR"] = df_fmt["Benchmark XIRR"].apply(lambda x: f"{x*100:.2f}%" if x else "N/A")
             st.dataframe(df_fmt, hide_index=True)
+
