@@ -4,14 +4,12 @@ import yfinance as yf
 import streamlit as st
 from config import CATEGORY_RULES, SCHEME_LIST_CACHE_TTL, NAV_HISTORY_CACHE_TTL, BENCHMARK_CACHE_TTL
 import time
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def _get_with_retry(url, retries=3):
     delay = 1
     for attempt in range(retries):
         try:
-            resp = requests.get(url, timeout=10, verify=False)
+            resp = requests.get(url, timeout=10)
             resp.raise_for_status()
             return resp.json()
         except requests.exceptions.RequestException as e:

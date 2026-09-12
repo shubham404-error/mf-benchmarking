@@ -106,9 +106,9 @@ def fund_picker(key_prefix):
             return options[selected]
     return None
 
+page = st.sidebar.radio("Navigation", ["Scorecard", "Comparison", "Style Drift", "Client Holdings"])
 
-
-def scorecard_page():
+if page == "Scorecard":
     st.header("Fund Scorecard")
     scheme_code = fund_picker("sc")
     
@@ -238,7 +238,7 @@ def scorecard_page():
             else:
                 st.error("Could not fetch NAV history for this scheme.")
 
-def comparison_page():
+elif page == "Comparison":
     st.header("Fund Comparison")
     st.caption("Build your own comparison list by searching and adding funds one at a time.")
     
@@ -297,7 +297,7 @@ def comparison_page():
                     insights = get_gemini_insights(prompt)
                     st.info(insights)
 
-def style_drift_page():
+elif page == "Style Drift":
     st.header("Style Drift Monitor")
     scheme_code = fund_picker("drift")
     
@@ -359,7 +359,7 @@ def style_drift_page():
             else:
                 st.warning("Not enough history (requires ~1.5 years) for rolling style analysis.")
 
-def client_holdings_page():
+elif page == "Client Holdings":
     st.header("Client Holdings Benchmarking")
     
     col1, col2, col3 = st.columns(3)
@@ -438,39 +438,3 @@ def client_holdings_page():
             df_fmt["Benchmark XIRR"] = df_fmt["Benchmark XIRR"].apply(lambda x: f"{x*100:.2f}%" if x else "N/A")
             st.dataframe(df_fmt, hide_index=True)
 
-
-def guide_page():
-    st.title("User Guide: MF Benchmarking")
-    st.markdown("""
-    Welcome to the Mutual Fund Benchmarking terminal. This application helps you analyze, compare, and monitor mutual funds using institutional-grade metrics.
-    
-    ### ?? Intended Outputs
-    - **Fund Scorecard:** Deep dive into a single fund's performance, risk-adjusted alpha, and historical growth compared to its benchmark.
-    - **Comparison:** Pit multiple funds against each other across return and risk metrics to find the true category leader.
-    - **Style Drift:** Monitor whether a fund manager is sticking to their stated mandate (e.g., staying in Large Caps) or drifting into riskier assets over time.
-    - **Client Holdings:** Track specific entry points for client investments and benchmark them against index proxies.
-    
-    ### ?? Required Inputs
-    - **Fund Search:** Use the search bar to find funds (minimum 3 characters). The app automatically filters for Direct/Growth options to ensure accurate benchmarking.
-    - **Risk-Free Rate:** Located in the sidebar. This defaults to the standard Indian risk-free rate (6.5%), but you can adjust it to model different interest rate environments.
-    - **Investment Amount & Date:** Required for the Client Holdings tab to calculate point-to-point portfolio performance.
-    
-    ### ?? Best Practices
-    - Use the **AI Insights** button to get a plain-English narrative of the quantitative data.
-    - Expand the detailed tables below the charts for full transparency into the trailing returns and volatility metrics.
-    """)
-
-pages = {
-    "Start": [
-        st.Page(guide_page, title="User Guide", icon="??", default=True)
-    ],
-    "Tools": [
-        st.Page(scorecard_page, title="Scorecard", icon="??"),
-        st.Page(comparison_page, title="Comparison", icon="??"),
-        st.Page(style_drift_page, title="Style Drift", icon="??"),
-        st.Page(client_holdings_page, title="Client Holdings", icon="??"),
-    ]
-}
-
-pg = st.navigation(pages, position="sidebar")
-pg.run()
