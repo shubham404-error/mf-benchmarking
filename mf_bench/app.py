@@ -86,14 +86,11 @@ def fund_picker(key_prefix):
     if len(query) >= 3:
         results = search_schemes(query)
         if results:
-            # Filter to streamline list: only growth options, no regular, no dividend, no idcw
             filtered = []
             for r in results:
                 name = r['schemeName'].lower()
-                # Exclude regular, dividend, idcw
                 if "regular" in name or "dividend" in name or "idcw" in name or "div" in name:
                     continue
-                # Ensure it's a growth option (often contains "growth" or is implied in some direct plans)
                 if "growth" in name or "direct" in name:
                     filtered.append(r)
                     
@@ -106,9 +103,7 @@ def fund_picker(key_prefix):
             return options[selected]
     return None
 
-page = st.sidebar.selectbox("Navigation", ["User Guide", "Scorecard", "Comparison", "Style Drift", "Client Holdings"])
-
-if page == "User Guide":
+def guide_page():
     st.markdown("<h1>Welcome to MF Benchmarking</h1>", unsafe_allow_html=True)
     st.markdown("### A rigorous, quantitative engine for evaluating mutual funds and portfolios.")
     st.markdown("---")
@@ -148,7 +143,7 @@ if page == "User Guide":
     st.markdown("---")
     st.caption("⚙️ **Settings Note:** You can adjust the Risk Free Rate assumption and provide your Gemini API Key in the sidebar. The UI strictly filters search results to only show **Growth** options to streamline your workflow.")
 
-elif page == "Scorecard":
+def scorecard_page():
     st.header("Fund Tearsheet")
     scheme_code = fund_picker("sc")
     
@@ -159,11 +154,9 @@ elif page == "Scorecard":
                 cat_string = meta.get("scheme_category", "")
                 cat_label, default_bench = classify_category(cat_string)
                 
-                # Header Block
                 st.markdown(f"<h1>{meta.get('scheme_name', 'Unknown')}</h1>", unsafe_allow_html=True)
                 st.markdown(f"**Category:** `{cat_label}` | **AMFI String:** `{cat_string}`")
                 
-                # Benchmark override
                 bench_options = {label: ticker for _, label, ticker in CATEGORY_RULES if ticker}
                 bench_options["None (No Benchmark)"] = None
                 
@@ -181,7 +174,6 @@ elif page == "Scorecard":
                 if selected_bench_ticker:
                     st.caption("*Note: Benchmark data uses tradeable ETF/Index proxies (e.g., ^NSEMDCP50, HDFCSML250.NS). Minor tracking errors vs AMC reported benchmarks may exist.*")
                 
-                # Fetch Benchmark
                 bench_series = None
                 if selected_bench_ticker:
                     start_date = nav_series.index[0]
@@ -191,11 +183,9 @@ elif page == "Scorecard":
                             bench_series = bench_series.iloc[:, 0]
                         bench_series.index = bench_series.index.tz_localize(None)
 
-                # Computations
                 trailing = calculate_trailing_returns(nav_series)
                 risk = calculate_risk_metrics(nav_series, bench_series, rfr_input)
                 
-                # KPI Row (Top)
                 st.markdown("### Key Metrics")
                 kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
                 
@@ -211,7 +201,6 @@ elif page == "Scorecard":
 
                 st.markdown("---")
                 
-                # The Main Visual (Center) & Narrative Block (Right)
                 main_col, narr_col = st.columns([2, 1])
                 
                 with main_col:
@@ -251,7 +240,6 @@ elif page == "Scorecard":
 
                 st.markdown("---")
                 
-                # Progressive Disclosure (Bottom)
                 st.write("### Detailed Analysis")
                 with st.expander("View Trailing Returns"):
                     trail_df = pd.DataFrame([{"Period": k, "Return": f"{v*100:.2f}%" if v is not None else "N/A"} for k, v in trailing.items()])
@@ -278,7 +266,7 @@ elif page == "Scorecard":
             else:
                 st.error("Could not fetch NAV history for this scheme.")
 
-elif page == "Comparison":
+def comparison_page():
     st.header("Fund Comparison")
     st.caption("Build your own comparison list by searching and adding funds one at a time.")
     
@@ -306,7 +294,7 @@ elif page == "Comparison":
             meta, nav = fetch_scheme_history(code)
             if nav is not None and not nav.empty:
                 trail = calculate_trailing_returns(nav)
-                risk = calculate_risk_metrics(nav, None, rfr_input) # Simplified, no benchmark for grid
+                risk = calculate_risk_metrics(nav, None, rfr_input) 
                 
                 compare_data.append({
                     "Fund": meta.get("scheme_name", code),
@@ -319,7 +307,6 @@ elif page == "Comparison":
         
         if compare_data:
             df_comp = pd.DataFrame(compare_data)
-            # Format
             df_comp_fmt = df_comp.copy()
             for col in ["1Y CAGR", "3Y CAGR", "Volatility", "Max Drawdown"]:
                 df_comp_fmt[col] = df_comp_fmt[col].apply(lambda x: f"{x*100:.2f}%" if pd.notnull(x) else "N/A")
@@ -337,17 +324,16 @@ elif page == "Comparison":
                     insights = get_gemini_insights(prompt)
                     st.info(insights)
 
-elif page == "Style Drift":
+def style_drift_page():
     st.header("Style Drift Monitor")
     scheme_code = fund_picker("drift")
     
     if scheme_code:
         with st.spinner("Analyzing Style..."):
             meta, nav = fetch_scheme_history(scheme_code)
-            if nav is not None and len(nav) > 252 * 1.5: # ~1.5 years
+            if nav is not None and len(nav) > 252 * 1.5: 
                 st.write(f"**{meta.get('scheme_name')}** - Stated Category: {meta.get('scheme_category')}")
                 
-                # Fetch style factors
                 factor_navs = {}
                 start_date = nav.index[0]
                 for factor_name, ticker in STYLE_FACTORS.items():
@@ -363,12 +349,10 @@ elif page == "Style Drift":
                     aligned = pd.concat([nav, factor_df], axis=1, join="inner").dropna()
                     
                     if not aligned.empty:
-                        # Weekly resample
                         weekly = aligned.resample("W-FRI").last().pct_change().dropna()
                         fund_weekly = weekly.iloc[:, 0]
                         factors_weekly = weekly.iloc[:, 1:]
                         
-                        # Rolling 52-week regression
                         window = 52
                         step = 4
                         
@@ -399,7 +383,7 @@ elif page == "Style Drift":
             else:
                 st.warning("Not enough history (requires ~1.5 years) for rolling style analysis.")
 
-elif page == "Client Holdings":
+def client_holdings_page():
     st.header("Client Holdings Benchmarking")
     
     col1, col2, col3 = st.columns(3)
@@ -443,7 +427,6 @@ elif page == "Client Holdings":
                 cashflows = [(pd_date, -h["amount"]), (latest_date, current_val)]
                 fund_xirr = xirr(cashflows)
                 
-                # Benchmark equivalent
                 bench_xirr = None
                 cat_label, default_bench = classify_category(meta.get("scheme_category"))
                 if default_bench:
@@ -477,3 +460,19 @@ elif page == "Client Holdings":
             df_fmt["Fund XIRR"] = df_fmt["Fund XIRR"].apply(lambda x: f"{x*100:.2f}%" if x else "N/A")
             df_fmt["Benchmark XIRR"] = df_fmt["Benchmark XIRR"].apply(lambda x: f"{x*100:.2f}%" if x else "N/A")
             st.dataframe(df_fmt, hide_index=True)
+
+
+pages = {
+    "Getting Started": [
+        st.Page(guide_page, title="User Guide", icon="📖", default=True)
+    ],
+    "Analytics": [
+        st.Page(scorecard_page, title="Scorecard", icon="📊"),
+        st.Page(comparison_page, title="Comparison", icon="⚖️"),
+        st.Page(style_drift_page, title="Style Drift", icon="🧭"),
+        st.Page(client_holdings_page, title="Client Holdings", icon="💼"),
+    ]
+}
+
+pg = st.navigation(pages, position="sidebar")
+pg.run()
