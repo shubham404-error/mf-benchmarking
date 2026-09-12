@@ -106,10 +106,50 @@ def fund_picker(key_prefix):
             return options[selected]
     return None
 
+page = st.sidebar.radio("Navigation", ["User Guide", "Scorecard", "Comparison", "Style Drift", "Client Holdings"])
 
+if page == "User Guide":
+    st.markdown("<h1>Welcome to MF Benchmarking</h1>", unsafe_allow_html=True)
+    st.markdown("### A rigorous, quantitative engine for evaluating mutual funds and portfolios.")
+    st.markdown("---")
+    
+    st.info("💡 **Getting Started:** Use the sidebar on the left to navigate between different analytical modules. Each tool is designed to answer specific questions about a fund's performance, risk profile, and consistency.")
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### 📊 Fund Tearsheet (Scorecard)")
+        st.write("Get an instant, comprehensive overview of any mutual fund.")
+        with st.expander("What it does", expanded=True):
+            st.write("• **KPI Dashboard**: View 1Y Return, Risk-Adjusted Alpha, and Max Drawdown at a glance.\n• **Interactive Charts**: Explore the growth of ₹10,000 against its exact benchmark.\n• **AI Analyst**: Receive an instant Gemini AI-generated summary of the fund's risk-adjusted performance.\n• **Detailed Matrices**: Dig into trailing returns and 1Y rolling return charts.")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        st.markdown("### ⚖️ Fund Comparison")
+        st.write("Rank and compare multiple funds side-by-side.")
+        with st.expander("What it does", expanded=False):
+            st.write("• Build a custom comparison list by searching and adding funds one at a time.\n• Rank funds by 1Y/3Y CAGR, Volatility, Sharpe, or Drawdown.\n• Generate an AI comparison summary to identify the best risk-adjusted performer.")
 
-def scorecard_page():
-    st.header("Fund Scorecard")
+    with col2:
+        st.markdown("### 🧭 Style Drift Monitor")
+        st.write("Ensure a fund is actually doing what its label says.")
+        with st.expander("What it does", expanded=True):
+            st.write("• Runs a **Returns-Based Style Analysis** (Sharpe-style regression) over a rolling 52-week window.\n• Identifies the fund's *actual* effective exposure to Large, Mid, and Small Cap factors.\n• Flags mismatches if a fund drifts away from its stated AMFI category mandate.")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        st.markdown("### 💼 Client Holdings")
+        st.write("Evaluate actual client investments against what they *could* have earned.")
+        with st.expander("What it does", expanded=False):
+            st.write("• Add a client's specific purchase date and investment amount.\n• Calculates the exact **XIRR** for the fund from that date.\n• Runs a parallel simulation calculating the exact XIRR if that money had been invested in the fund's underlying benchmark instead.")
+            
+    st.markdown("---")
+    st.caption("⚙️ **Settings Note:** You can adjust the Risk Free Rate assumption and provide your Gemini API Key in the sidebar. The UI strictly filters search results to only show **Growth** options to streamline your workflow.")
+
+elif page == "Scorecard":
+    st.header("Fund Tearsheet")
     scheme_code = fund_picker("sc")
     
     if scheme_code:
@@ -238,7 +278,7 @@ def scorecard_page():
             else:
                 st.error("Could not fetch NAV history for this scheme.")
 
-def comparison_page():
+elif page == "Comparison":
     st.header("Fund Comparison")
     st.caption("Build your own comparison list by searching and adding funds one at a time.")
     
@@ -297,7 +337,7 @@ def comparison_page():
                     insights = get_gemini_insights(prompt)
                     st.info(insights)
 
-def style_drift_page():
+elif page == "Style Drift":
     st.header("Style Drift Monitor")
     scheme_code = fund_picker("drift")
     
@@ -359,7 +399,7 @@ def style_drift_page():
             else:
                 st.warning("Not enough history (requires ~1.5 years) for rolling style analysis.")
 
-def client_holdings_page():
+elif page == "Client Holdings":
     st.header("Client Holdings Benchmarking")
     
     col1, col2, col3 = st.columns(3)
@@ -437,40 +477,3 @@ def client_holdings_page():
             df_fmt["Fund XIRR"] = df_fmt["Fund XIRR"].apply(lambda x: f"{x*100:.2f}%" if x else "N/A")
             df_fmt["Benchmark XIRR"] = df_fmt["Benchmark XIRR"].apply(lambda x: f"{x*100:.2f}%" if x else "N/A")
             st.dataframe(df_fmt, hide_index=True)
-
-
-def guide_page():
-    st.title("User Guide: MF Benchmarking")
-    st.markdown("""
-    Welcome to the Mutual Fund Benchmarking terminal. This application helps you analyze, compare, and monitor mutual funds using institutional-grade metrics.
-    
-    ### ?? Intended Outputs
-    - **Fund Scorecard:** Deep dive into a single fund's performance, risk-adjusted alpha, and historical growth compared to its benchmark.
-    - **Comparison:** Pit multiple funds against each other across return and risk metrics to find the true category leader.
-    - **Style Drift:** Monitor whether a fund manager is sticking to their stated mandate (e.g., staying in Large Caps) or drifting into riskier assets over time.
-    - **Client Holdings:** Track specific entry points for client investments and benchmark them against index proxies.
-    
-    ### ?? Required Inputs
-    - **Fund Search:** Use the search bar to find funds (minimum 3 characters). The app automatically filters for Direct/Growth options to ensure accurate benchmarking.
-    - **Risk-Free Rate:** Located in the sidebar. This defaults to the standard Indian risk-free rate (6.5%), but you can adjust it to model different interest rate environments.
-    - **Investment Amount & Date:** Required for the Client Holdings tab to calculate point-to-point portfolio performance.
-    
-    ### ?? Best Practices
-    - Use the **AI Insights** button to get a plain-English narrative of the quantitative data.
-    - Expand the detailed tables below the charts for full transparency into the trailing returns and volatility metrics.
-    """)
-
-pages = {
-    "Start": [
-        st.Page(guide_page, title="User Guide", icon="??", default=True)
-    ],
-    "Tools": [
-        st.Page(scorecard_page, title="Scorecard", icon="??"),
-        st.Page(comparison_page, title="Comparison", icon="??"),
-        st.Page(style_drift_page, title="Style Drift", icon="??"),
-        st.Page(client_holdings_page, title="Client Holdings", icon="??"),
-    ]
-}
-
-pg = st.navigation(pages, position="sidebar")
-pg.run()
