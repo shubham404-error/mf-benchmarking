@@ -106,7 +106,7 @@ def fund_picker(key_prefix):
             return options[selected]
     return None
 
-page = st.sidebar.radio("Navigation", ["User Guide", "Scorecard", "Comparison", "Style Drift", "Client Holdings"])
+page = st.sidebar.selectbox("Navigation", ["User Guide", "Scorecard", "Comparison", "Style Drift", "Client Holdings"])
 
 if page == "User Guide":
     st.markdown("<h1>Welcome to MF Benchmarking</h1>", unsafe_allow_html=True)
