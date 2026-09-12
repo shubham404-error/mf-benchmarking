@@ -104,44 +104,61 @@ def fund_picker(key_prefix):
     return None
 
 def guide_page():
-    st.markdown("<h1>Welcome to MF Benchmarking</h1>", unsafe_allow_html=True)
-    st.markdown("### A rigorous, quantitative engine for evaluating mutual funds and portfolios.")
+    st.markdown("""
+    <div style='text-align: center; padding: 2rem 0;'>
+        <h1 style='font-size: 3rem; margin-bottom: 0;'>CapitalSense</h1>
+        <p style='font-size: 1.2rem; color: #888;'>Institutional-grade Mutual Fund Intelligence</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("---")
     
-    st.info("💡 **Getting Started:** Use the sidebar on the left to navigate between different analytical modules. Each tool is designed to answer specific questions about a fund's performance, risk profile, and consistency.")
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="large")
     
     with col1:
-        st.markdown("### 📊 Fund Tearsheet (Scorecard)")
-        st.write("Get an instant, comprehensive overview of any mutual fund.")
-        with st.expander("What it does", expanded=True):
-            st.write("• **KPI Dashboard**: View 1Y Return, Risk-Adjusted Alpha, and Max Drawdown at a glance.\n• **Interactive Charts**: Explore the growth of ₹10,000 against its exact benchmark.\n• **AI Analyst**: Receive an instant Gemini AI-generated summary of the fund's risk-adjusted performance.\n• **Detailed Matrices**: Dig into trailing returns and 1Y rolling return charts.")
+        with st.container(border=True):
+            st.markdown("### 📊 Fund Tearsheet")
+            st.markdown("""
+            **The ultimate scorecard for any mutual fund.**
             
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        st.markdown("### ⚖️ Fund Comparison")
-        st.write("Rank and compare multiple funds side-by-side.")
-        with st.expander("What it does", expanded=False):
-            st.write("• Build a custom comparison list by searching and adding funds one at a time.\n• Rank funds by 1Y/3Y CAGR, Volatility, Sharpe, or Drawdown.\n• Generate an AI comparison summary to identify the best risk-adjusted performer.")
+            * **Instant KPIs:** 1Y Return, Risk-Adjusted Alpha, Max Drawdown.
+            * **Interactive Growth:** Visualize ₹10k growth against exact index proxies.
+            * **AI Analyst:** Auto-generated summaries of risk-adjusted performance.
+            """)
+            
+        with st.container(border=True):
+            st.markdown("### ⚖️ Fund Comparison")
+            st.markdown("""
+            **Head-to-head performance battles.**
+            
+            * Build custom comparison lists on the fly.
+            * Sortable matrices by CAGR, Volatility, or Sharpe Ratio.
+            * AI-driven winner recommendations based on risk metrics.
+            """)
 
     with col2:
-        st.markdown("### 🧭 Style Drift Monitor")
-        st.write("Ensure a fund is actually doing what its label says.")
-        with st.expander("What it does", expanded=True):
-            st.write("• Runs a **Returns-Based Style Analysis** (Sharpe-style regression) over a rolling 52-week window.\n• Identifies the fund's *actual* effective exposure to Large, Mid, and Small Cap factors.\n• Flags mismatches if a fund drifts away from its stated AMFI category mandate.")
+        with st.container(border=True):
+            st.markdown("### 🧭 Style Drift Monitor")
+            st.markdown("""
+            **Catch managers deviating from their mandates.**
             
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        st.markdown("### 💼 Client Holdings")
-        st.write("Evaluate actual client investments against what they *could* have earned.")
-        with st.expander("What it does", expanded=False):
-            st.write("• Add a client's specific purchase date and investment amount.\n• Calculates the exact **XIRR** for the fund from that date.\n• Runs a parallel simulation calculating the exact XIRR if that money had been invested in the fund's underlying benchmark instead.")
+            * Runs a rolling 52-week **Returns-Based Style Analysis**.
+            * Deconstructs exposure to Large, Mid, and Small Cap factors.
+            * Visually flags mandate mismatches over time.
+            """)
             
-    st.markdown("---")
-    st.caption("⚙️ **Settings Note:** You can adjust the Risk Free Rate assumption and provide your Gemini API Key in the sidebar. The UI strictly filters search results to only show **Growth** options to streamline your workflow.")
+        with st.container(border=True):
+            st.markdown("### 💼 Client Holdings")
+            st.markdown("""
+            **Precision portfolio backtesting.**
+            
+            * Input specific client purchase dates and amounts.
+            * Calculates exact point-to-point **XIRR** for the fund.
+            * Runs parallel XIRR simulations against benchmark proxies.
+            """)
+            
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.info("💡 **Pro Tip:** Use the sidebar on the left to navigate between modules, set the Risk Free Rate, and input your Gemini API Key.")
 
 def scorecard_page():
     st.header("Fund Tearsheet")
