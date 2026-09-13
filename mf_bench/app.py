@@ -60,7 +60,7 @@ def get_gemini_insights(prompt, retries=3):
     for attempt in range(retries):
         try:
             response = gemini_client.models.generate_content(
-                model='gemini-2.0-flash-lite',
+                model='gemini-3.5-flash-lite',
                 contents=prompt
             )
             return response.text
